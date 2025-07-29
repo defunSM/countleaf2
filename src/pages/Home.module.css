@@ -197,11 +197,12 @@
 
 .inputContainer {
   position: relative;
+  width: 100%;
 }
 
 .input {
   width: 100%;
-  padding: 1rem 1.5rem;
+  padding: 1rem 3rem 1rem 1.5rem;
   font-size: 1.125rem;
   border: 2px solid #e5e7eb;
   border-radius: 16px;
@@ -209,6 +210,7 @@
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   outline: none;
+  box-sizing: border-box;
 }
 
 .input:focus {
@@ -226,6 +228,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
+  pointer-events: none;
 }
 
 .inputIcon svg {
@@ -334,26 +337,29 @@
 }
 
 .resultsCard {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  background: #ffffff;
   border-radius: 24px;
   padding: 2rem;
-  border: 1px solid #bbf7d0;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .resultsHeader {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #f3f4f6;
 }
 
 .resultsTitle {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  margin-bottom: 0.75rem;
 }
 
 .resultsDivider {
-  width: 64px;
+  width: 80px;
   height: 4px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border-radius: 2px;
@@ -367,8 +373,8 @@
 }
 
 .urlCard {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -376,30 +382,36 @@
 .urlLabel {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .urlValue {
-  color: #374151;
+  color: #111827;
   word-break: break-all;
   font-size: 1.125rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-weight: 500;
 }
 
 .wordCountCard {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #bbf7d0;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 2.5rem;
   text-align: center;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1);
 }
 
 .wordCountLabel {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #6b7280;
-  margin-bottom: 0.75rem;
+  color: #047857;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .wordCountValue {
@@ -409,8 +421,9 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -420,20 +433,23 @@
 }
 
 .wordCountSubtext {
-  color: #6b7280;
-  font-size: 1rem;
+  color: #047857;
+  font-size: 1.125rem;
+  font-weight: 500;
 }
 
 .resultsActions {
   margin-top: 2rem;
   text-align: center;
+  padding-top: 1.5rem;
+  border-top: 2px solid #f3f4f6;
 }
 
 .resetButton {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 2rem;
+  padding: 0.875rem 2rem;
   border: 2px solid #10b981;
   color: #059669;
   background: transparent;
@@ -441,6 +457,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
 .resetButton:hover {
@@ -553,17 +570,48 @@
     color: #d1d5db;
   }
   
-  .urlCard,
-  .wordCountCard {
-    background: rgba(55, 65, 81, 0.6);
+  .resultsCard {
+    background: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+  
+  .resultsHeader {
+    border-bottom-color: #374151;
+  }
+  
+  .resultsTitle {
+    color: #f9fafb;
+  }
+  
+  .urlCard {
+    background: #374151;
+    border-color: #4b5563;
+  }
+  
+  .urlLabel {
+    color: #9ca3af;
   }
   
   .urlValue {
     color: #f9fafb;
   }
   
-  .resultsTitle {
-    color: #f9fafb;
+  .wordCountCard {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    border-color: #10b981;
+  }
+  
+  .wordCountLabel {
+    color: #a7f3d0;
+  }
+  
+  .wordCountSubtext {
+    color: #a7f3d0;
+  }
+  
+  .resultsActions {
+    border-top-color: #374151;
   }
   
   .featuresTitle {
