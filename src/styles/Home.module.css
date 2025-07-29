@@ -1,28 +1,179 @@
+/* Modern, stylish, and dark mode ready */
+:root {
+  --bg: #f4f8fb;
+  --card-bg: #fff;
+  --primary: #0a2540;
+  --accent: #00bfae;
+  --input-bg: #f0f4f8;
+  --text: #222;
+  --shadow: 0 4px 24px rgba(10,37,64,0.08);
+}
+.dark {
+  --bg: #181c23;
+  --card-bg: #232a34;
+  --primary: #00bfae;
+  --accent: #00bfae;
+  --input-bg: #232a34;
+  --text: #f4f8fb;
+  --shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+
 .main {
+  min-height: 100vh;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 6rem;
-  min-height: 100vh;
+  justify-content: flex-start;
+  padding: 2rem 1rem 4rem 1rem;
+  transition: background 0.3s;
+}
+
+.title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 2rem 0 1.5rem 0;
+  letter-spacing: -1px;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.dark .title {
+  color: var(--accent);
+}
+
+.darkToggle {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: var(--card-bg);
+  color: var(--primary);
+  border: none;
+  border-radius: 2rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  z-index: 10;
+}
+
+.card {
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  border-radius: 1.2rem;
+  padding: 2rem 2.5rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.inputCard {
+  max-width: 480px;
+  width: 100%;
+  justify-content: center;
+}
+
+.urlInput {
+  flex: 1;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--input-bg);
+  background: var(--input-bg);
+  font-size: 1.1rem;
+  color: var(--text);
+  outline: none;
+  transition: border 0.2s, background 0.3s;
+}
+.urlInput:focus {
+  border: 1.5px solid var(--accent);
 }
 
 .enterbutton {
-  margin-left: 1rem;
-  background-color: hsl(183, 100%, 15%);
-  color: white;
-  border-radius: 0.5rem;
-  border-color: hsl(183, 100%, 15%);
-  border-style: solid;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: bold;
+  box-shadow: var(--shadow);
+  margin-left: 1rem;
+  transition: background 0.2s, color 0.2s;
 }
-
 .enterbutton:hover {
-  background-color: hsl(184, 14%, 56%);
-  border-color:hsl(184, 14%, 56%);
+  background: var(--primary);
+  color: #fff;
 }
 
 .container {
-  margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resultsList {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.resultCard {
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  border-radius: 0.9rem;
+  padding: 1.1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 1.1rem;
+  transition: background 0.3s, color 0.3s;
+}
+.resultCard a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.resultCard a:hover {
+  color: var(--accent);
+}
+.resultIndex {
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 0.7rem;
+}
+.placeholder {
+  color: #aaa;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .main {
+    padding: 1rem 0.2rem 2rem 0.2rem;
+  }
+  .card, .inputCard {
+    padding: 1.2rem 0.7rem;
+  }
+  .container {
+    margin-top: 1.2rem;
+  }
+  .title {
+    font-size: 2rem;
+  }
 }
