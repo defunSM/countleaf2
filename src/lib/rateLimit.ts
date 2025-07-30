@@ -21,11 +21,11 @@ class RateLimiter {
 
   private cleanupExpiredEntries(): void {
     const now = Date.now()
-    for (const [key, entry] of this.requests.entries()) {
+    this.requests.forEach((entry, key) => {
       if (now > entry.resetTime) {
         this.requests.delete(key)
       }
-    }
+    })
   }
 
   public checkLimit(req: any): { allowed: boolean; remaining: number; resetTime: number } {
