@@ -165,7 +165,7 @@ export default function Home() {
                   <div className={styles.metricCard}>
                     <div className={styles.metricLabel}>Most Frequent Word</div>
                     <div className={styles.metricValue}>
-                      "{result.mostFrequentWord}"
+                    `&quot;`{result.mostFrequentWord}`&quot;`
                     </div>
                     <div className={styles.metricSubtext}>
                       appears {result.mostFrequentWordCount} times
