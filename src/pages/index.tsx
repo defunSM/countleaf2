@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import { countWordsFromUrl } from "@/lib/actions"
+import { useMutation, useQuery } from "convex/react"
+import { api } from "../../convex/_generated/api"
 import styles from "./Home.module.css"
 
 export default function Home() {
@@ -9,37 +11,15 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [copiedMetric, setCopiedMetric] = useState<string | null>(null)
-  const [webpageCount, setWebpageCount] = useState(0)
+
+  // Convex mutations and queries
+  const storeAnalysis = useMutation(api.analyses.storeAnalysis)
+  const totalAnalyses = useQuery(api.analyses.getTotalAnalyses)
+  const analysisStats = useQuery(api.analyses.getAnalysisStats)
 
   useEffect(() => {
     setIsVisible(true)
-    fetchWebpageCount()
   }, [])
-
-  const fetchWebpageCount = async () => {
-    try {
-      const response = await fetch('/api/counter')
-      const data = await response.json()
-      setWebpageCount(data.count)
-    } catch (error) {
-      console.error('Failed to fetch webpage count:', error)
-    }
-  }
-
-  const incrementWebpageCount = async () => {
-    try {
-      const response = await fetch('/api/counter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-      setWebpageCount(data.count)
-    } catch (error) {
-      console.error('Failed to increment webpage count:', error)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,8 +29,17 @@ export default function Home() {
     try {
       const data = await countWordsFromUrl(url)
       setResult(data)
-      // Increment counter after successful analysis
-      await incrementWebpageCount()
+      
+      // Store analysis data in Convex
+      await storeAnalysis({
+        url: data.url,
+        wordCount: data.wordCount,
+        characterCount: data.wordCount * 5, // Rough estimate
+        sentenceCount: Math.ceil(data.wordCount / 15), // Rough estimate
+        paragraphCount: Math.ceil(data.wordCount / 100), // Rough estimate
+        readingTimeMinutes: Math.ceil(data.wordCount / 200),
+        userAgent: navigator.userAgent,
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to process URL")
     } finally {
@@ -131,11 +120,33 @@ export default function Home() {
               </svg>
             </div>
             <div className={styles.counterContent}>
-              <div className={styles.counterValue}>{webpageCount.toLocaleString()}</div>
+              <div className={styles.counterValue}>
+                {totalAnalyses !== undefined ? totalAnalyses.toLocaleString() : "..."}
+              </div>
               <div className={styles.counterLabel}>Webpages Analyzed</div>
             </div>
           </div>
         </div>
+
+        {/* Stats Display */}
+        {analysisStats && (
+          <div className={styles.statsContainer}>
+            <div className={styles.statsGrid}>
+              <div className={styles.statCard}>
+                <div className={styles.statValue}>{analysisStats.totalWords.toLocaleString()}</div>
+                <div className={styles.statLabel}>Total Words Analyzed</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statValue}>{analysisStats.averageWords.toLocaleString()}</div>
+                <div className={styles.statLabel}>Average Words per Page</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statValue}>{analysisStats.averageReadingTime}</div>
+                <div className={styles.statLabel}>Avg. Reading Time (min)</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Hero Section */}
         <div className={`${styles.hero} ${isVisible ? styles.visible : ''}`}>
