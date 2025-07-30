@@ -9,10 +9,37 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [copiedMetric, setCopiedMetric] = useState<string | null>(null)
+  const [webpageCount, setWebpageCount] = useState(0)
 
   useEffect(() => {
     setIsVisible(true)
+    fetchWebpageCount()
   }, [])
+
+  const fetchWebpageCount = async () => {
+    try {
+      const response = await fetch('/api/counter')
+      const data = await response.json()
+      setWebpageCount(data.count)
+    } catch (error) {
+      console.error('Failed to fetch webpage count:', error)
+    }
+  }
+
+  const incrementWebpageCount = async () => {
+    try {
+      const response = await fetch('/api/counter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
+      setWebpageCount(data.count)
+    } catch (error) {
+      console.error('Failed to increment webpage count:', error)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,6 +49,8 @@ export default function Home() {
     try {
       const data = await countWordsFromUrl(url)
       setResult(data)
+      // Increment counter after successful analysis
+      await incrementWebpageCount()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to process URL")
     } finally {
@@ -93,6 +122,21 @@ export default function Home() {
       </div>
 
       <div className={styles.container}>
+        {/* Counter Display */}
+        <div className={styles.counterContainer}>
+          <div className={styles.counterCard}>
+            <div className={styles.counterIcon}>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div className={styles.counterContent}>
+              <div className={styles.counterValue}>{webpageCount.toLocaleString()}</div>
+              <div className={styles.counterLabel}>Webpages Analyzed</div>
+            </div>
+          </div>
+        </div>
+
         {/* Hero Section */}
         <div className={`${styles.hero} ${isVisible ? styles.visible : ''}`}>
           <div className={styles.logoContainer}>

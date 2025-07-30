@@ -75,6 +75,79 @@
   }
 }
 
+/* Counter Container */
+.counterContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out 0.1s forwards;
+}
+
+.counterCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.15);
+  transition: all 0.3s ease;
+}
+
+.counterCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.counterIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 12px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.counterIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.counterContent {
+  text-align: left;
+}
+
+.counterValue {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #059669;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.counterLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Hero Section */
 .hero {
   text-align: center;
@@ -645,6 +718,23 @@
 @media (prefers-color-scheme: dark) {
   .main {
     background: linear-gradient(135deg, #1f2937 0%, #111827 50%, #065f46 100%);
+  }
+  
+  .counterCard {
+    background: rgba(31, 41, 55, 0.9);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  
+  .counterCard:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+  }
+  
+  .counterValue {
+    color: #10b981;
+  }
+  
+  .counterLabel {
+    color: #9ca3af;
   }
   
   .form {
