@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { countWordsFromUrl } from "@/lib/actions"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
+import { RadarChart } from "@/components/RadarChart"
 import styles from "./Home.module.css"
 
 export default function Home() {
@@ -243,6 +244,22 @@ export default function Home() {
                   <div className={styles.urlValue} title={result.url}>
                     {result.url.length > 60 ? `${result.url.substring(0, 60)}...` : result.url}
                   </div>
+                </div>
+                
+                <div className={styles.chartContainer}>
+                  <div className={styles.chartHeader}>
+                    <h3 className={styles.chartTitle}>Content Analysis Overview</h3>
+                  </div>
+                  <RadarChart 
+                    wordCount={result.wordCount} 
+                    analysisStats={analysisStats ? {
+                      averageWords: analysisStats.averageWords,
+                      averageCharacters: analysisStats.averageCharacters,
+                      averageSentences: analysisStats.averageSentences,
+                      averageParagraphs: analysisStats.averageParagraphs,
+                      averageReadingTime: analysisStats.averageReadingTime,
+                    } : undefined}
+                  />
                 </div>
                 
                 <div className={styles.metricsGrid}>

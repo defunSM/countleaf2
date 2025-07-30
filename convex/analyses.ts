@@ -74,6 +74,10 @@ export const getAnalysisStats = query({
         averageWords: 0,
         totalCharacters: 0,
         averageCharacters: 0,
+        totalSentences: 0,
+        averageSentences: 0,
+        totalParagraphs: 0,
+        averageParagraphs: 0,
         totalReadingTime: 0,
         averageReadingTime: 0,
       };
@@ -81,6 +85,8 @@ export const getAnalysisStats = query({
 
     const totalWords = analyses.reduce((sum, analysis) => sum + analysis.wordCount, 0);
     const totalCharacters = analyses.reduce((sum, analysis) => sum + analysis.characterCount, 0);
+    const totalSentences = analyses.reduce((sum, analysis) => sum + analysis.sentenceCount, 0);
+    const totalParagraphs = analyses.reduce((sum, analysis) => sum + analysis.paragraphCount, 0);
     const totalReadingTime = analyses.reduce((sum, analysis) => sum + analysis.readingTimeMinutes, 0);
 
     return {
@@ -89,6 +95,10 @@ export const getAnalysisStats = query({
       averageWords: Math.round(totalWords / analyses.length),
       totalCharacters,
       averageCharacters: Math.round(totalCharacters / analyses.length),
+      totalSentences,
+      averageSentences: Math.round(totalSentences / analyses.length),
+      totalParagraphs,
+      averageParagraphs: Math.round(totalParagraphs / analyses.length),
       totalReadingTime,
       averageReadingTime: Math.round(totalReadingTime / analyses.length),
     };

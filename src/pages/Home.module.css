@@ -524,6 +524,37 @@
   font-weight: 500;
 }
 
+/* Chart Container */
+.chartContainer {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #bbf7d0;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.chartContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+}
+
+.chartHeader {
+  margin-bottom: 1.5rem;
+}
+
+.chartTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #047857;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* Metrics Grid */
 .metricsGrid {
   display: grid;
@@ -877,6 +908,19 @@
   }
   
   .metricSubtext {
+    color: #a7f3d0;
+  }
+  
+  .chartContainer {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    border-color: #10b981;
+  }
+  
+  .chartContainer:hover {
+    border-color: #34d399;
+  }
+  
+  .chartTitle {
     color: #a7f3d0;
   }
   
