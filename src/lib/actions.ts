@@ -12,7 +12,15 @@ export interface AnalysisResult {
 
 export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
   try {
-    const response = await fetch(`/api/webcrawler?link=${encodeURIComponent(url)}`)
+    const requestBody = { link: url }
+    
+    const response = await fetch('/api/webcrawler', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    })
     
     if (!response.ok) {
       if (response.status === 429) {
@@ -20,6 +28,7 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
         throw new Error(`Rate limit exceeded: ${errorData.message}`)
       }
       throw new Error(`Failed to fetch webpage: ${response.statusText}`)
+
     }
     
     const html = await response.json()

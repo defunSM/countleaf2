@@ -1,9 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import rateLimiter from '../../lib/rateLimit'
 
-// fetch html from the link
-async function getHTML(link: any) {
+
+async function getHTML(link: string) {
   const response = await fetch(link)
   const html = await response.text()
   return html

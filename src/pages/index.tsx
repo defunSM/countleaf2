@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { countWordsFromUrl } from "@/lib/actions"
+import { countWordsFromUrl, AnalysisResult } from "@/lib/actions"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 import styles from "./Home.module.css"
@@ -7,10 +7,11 @@ import styles from "./Home.module.css"
 export default function Home() {
   const [url, setUrl] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<{ wordCount: number; url: string } | null>(null)
+  const [result, setResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [copiedMetric, setCopiedMetric] = useState<string | null>(null)
+  
 
   // Convex mutations and queries
   const storeAnalysis = useMutation(api.analyses.storeAnalysis)
@@ -28,20 +29,35 @@ export default function Home() {
 
     try {
       const data = await countWordsFromUrl(url)
+      
       setResult(data)
       
-      // Store analysis data in Convex
-      await storeAnalysis({
-        url: data.url,
-        wordCount: data.wordCount,
-        characterCount: data.wordCount * 5, // Rough estimate
-        sentenceCount: Math.ceil(data.wordCount / 15), // Rough estimate
-        paragraphCount: Math.ceil(data.wordCount / 100), // Rough estimate
-        readingTimeMinutes: Math.ceil(data.wordCount / 200),
-        userAgent: navigator.userAgent,
-      })
+      // Store analysis data with IP tracking
+      try {
+        await fetch('/api/store-analysis', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: data.url,
+            wordCount: data.wordCount,
+            tokenCount: data.tokenCount,
+            sentenceCount: data.sentenceCount,
+            averageWordsPerSentence: data.averageWordsPerSentence,
+            mostFrequentWord: data.mostFrequentWord,
+            mostFrequentWordCount: data.mostFrequentWordCount,
+            userAgent: navigator.userAgent,
+          })
+        })
+      } catch (storeError) {
+        console.error('Failed to store analysis:', storeError)
+        // Don't throw error here as the main functionality worked
+      }
+      
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to process URL")
+      const errorMsg = err instanceof Error ? err.message : "Failed to process URL"
+      setError(errorMsg)
     } finally {
       setIsLoading(false)
     }
@@ -194,6 +210,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
 
             <button
               type="submit"
