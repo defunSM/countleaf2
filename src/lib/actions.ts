@@ -10,15 +10,9 @@ export interface AnalysisResult {
   url: string
 }
 
-export async function countWordsFromUrl(url: string, captchaId?: string, captchaAnswer?: string): Promise<AnalysisResult> {
+export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
   try {
-    const requestBody: any = { link: url }
-    
-    // Only include CAPTCHA data if provided
-    if (captchaId && captchaAnswer !== undefined) {
-      requestBody.captchaId = captchaId
-      requestBody.captchaAnswer = captchaAnswer
-    }
+    const requestBody = { link: url }
     
     const response = await fetch('/api/webcrawler', {
       method: 'POST',

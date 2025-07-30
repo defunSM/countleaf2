@@ -111,7 +111,8 @@ export function getIPStats(req: NextApiRequest): {
 }
 
 function cleanupOldEntries(cutoffTime: number): void {
-  for (const [ip, data] of ipStore.entries()) {
+  const entries = Array.from(ipStore.entries())
+  for (const [ip, data] of entries) {
     // Remove attempts older than 15 minutes
     data.attempts = data.attempts.filter(timestamp => timestamp > cutoffTime)
     
@@ -138,7 +139,8 @@ export function getAllIPStats(): Array<{
     requiresCaptcha: boolean
   }> = []
   
-  for (const [ip, data] of ipStore.entries()) {
+  const entries = Array.from(ipStore.entries())
+  for (const [ip, data] of entries) {
     const recentAttempts = data.attempts.filter(timestamp => timestamp > oneMinuteAgo)
     
     stats.push({

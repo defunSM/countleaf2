@@ -19,7 +19,8 @@ export function rateLimit(config: RateLimitConfig) {
     const windowStart = now - config.windowMs
     
     // Clean up old entries
-    for (const [k, data] of rateLimitStore.entries()) {
+    const entries = Array.from(rateLimitStore.entries())
+    for (const [k, data] of entries) {
       if (data.resetTime < now) {
         rateLimitStore.delete(k)
       }

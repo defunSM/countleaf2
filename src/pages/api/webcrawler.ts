@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { trackIPAttempt, getClientIP } from '@/lib/ipTracking'
-import { verifyCaptcha } from '@/lib/captcha'
 
 async function getHTML(link: string) {
   const response = await fetch(link)
@@ -28,32 +27,13 @@ export default async function handler(
       })
     }
 
-    const { link, captchaId, captchaAnswer } = req.body
+    const { link } = req.body
 
     // Verify required fields
     if (!link) {
       return res.status(400).json({ 
         error: 'Missing required field: link' 
       })
-    }
-
-    // Check if CAPTCHA is required for this IP
-    if (ipCheck.requiresCaptcha) {
-      if (!captchaId || captchaAnswer === undefined) {
-        return res.status(400).json({ 
-          error: 'CAPTCHA verification required. Please complete the security check.',
-          requiresCaptcha: true
-        })
-      }
-
-      // Verify CAPTCHA
-      const captchaValid = verifyCaptcha(captchaId, parseInt(captchaAnswer))
-      if (!captchaValid) {
-        return res.status(400).json({ 
-          error: 'Invalid CAPTCHA. Please try again.',
-          requiresCaptcha: true
-        })
-      }
     }
 
     // Validate URL
