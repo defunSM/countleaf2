@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import { countWordsFromUrl } from "@/lib/actions"
+import { countWordsFromUrl, AnalysisResult } from "@/lib/actions"
 import styles from "./Home.module.css"
 
 export default function Home() {
   const [url, setUrl] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<{ wordCount: number; url: string } | null>(null)
+  const [result, setResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -133,12 +133,44 @@ export default function Home() {
                   <div className={styles.urlValue}>{result.url}</div>
                 </div>
                 
-                <div className={styles.wordCountCard}>
-                  <div className={styles.wordCountLabel}>Total Word Count</div>
-                  <div className={styles.wordCountValue}>
-                    {result.wordCount.toLocaleString()}
+                <div className={styles.metricsGrid}>
+                  <div className={styles.metricCard}>
+                    <div className={styles.metricLabel}>Total Words</div>
+                    <div className={styles.metricValue}>
+                      {result.wordCount.toLocaleString()}
+                    </div>
                   </div>
-                  <div className={styles.wordCountSubtext}>words found</div>
+                  
+                  <div className={styles.metricCard}>
+                    <div className={styles.metricLabel}>Total Tokens</div>
+                    <div className={styles.metricValue}>
+                      {result.tokenCount.toLocaleString()}
+                    </div>
+                  </div>
+                  
+                  <div className={styles.metricCard}>
+                    <div className={styles.metricLabel}>Sentences</div>
+                    <div className={styles.metricValue}>
+                      {result.sentenceCount.toLocaleString()}
+                    </div>
+                  </div>
+                  
+                  <div className={styles.metricCard}>
+                    <div className={styles.metricLabel}>Words/Sentence</div>
+                    <div className={styles.metricValue}>
+                      {result.averageWordsPerSentence}
+                    </div>
+                  </div>
+                  
+                  <div className={styles.metricCard}>
+                    <div className={styles.metricLabel}>Most Frequent Word</div>
+                    <div className={styles.metricValue}>
+                      "{result.mostFrequentWord}"
+                    </div>
+                    <div className={styles.metricSubtext}>
+                      appears {result.mostFrequentWordCount} times
+                    </div>
+                  </div>
                 </div>
               </div>
 
