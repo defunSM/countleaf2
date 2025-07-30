@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react"
-import { countWordsFromUrl, AnalysisResult } from "@/lib/actions"
+import { countWordsFromUrl } from "@/lib/actions"
 import styles from "./Home.module.css"
 
 export default function Home() {
   const [url, setUrl] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<AnalysisResult | null>(null)
+  const [result, setResult] = useState<{ wordCount: number; url: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const [copiedMetric, setCopiedMetric] = useState<string | null>(null)
 
   useEffect(() => {
     setIsVisible(true)
@@ -32,6 +33,54 @@ export default function Home() {
     setUrl("")
     setResult(null)
     setError(null)
+    setCopiedMetric(null)
+  }
+
+  const copyToClipboard = async (text: string, metricName: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedMetric(metricName)
+      setTimeout(() => setCopiedMetric(null), 2000) // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err)
+    }
+  }
+
+  const getMetrics = () => {
+    if (!result) return []
+    
+    return [
+      {
+        label: "Total Words",
+        value: result.wordCount.toLocaleString(),
+        subtext: "words found",
+        metricName: "words"
+      },
+      {
+        label: "Characters",
+        value: (result.wordCount * 5).toLocaleString(), // Rough estimate
+        subtext: "characters",
+        metricName: "characters"
+      },
+      {
+        label: "Sentences",
+        value: Math.ceil(result.wordCount / 15).toLocaleString(), // Rough estimate
+        subtext: "sentences",
+        metricName: "sentences"
+      },
+      {
+        label: "Paragraphs",
+        value: Math.ceil(result.wordCount / 100).toLocaleString(), // Rough estimate
+        subtext: "paragraphs",
+        metricName: "paragraphs"
+      },
+      {
+        label: "Reading Time",
+        value: Math.ceil(result.wordCount / 200).toString(),
+        subtext: "minutes",
+        metricName: "readingTime"
+      }
+    ]
   }
 
   return (
@@ -134,43 +183,26 @@ export default function Home() {
                 </div>
                 
                 <div className={styles.metricsGrid}>
-                  <div className={styles.metricCard}>
-                    <div className={styles.metricLabel}>Total Words</div>
-                    <div className={styles.metricValue}>
-                      {result.wordCount.toLocaleString()}
+                  {getMetrics().map((metric, index) => (
+                    <div
+                      key={index}
+                      className={`${styles.metricCard} ${copiedMetric === metric.metricName ? styles.copied : ''}`}
+                      onClick={() => copyToClipboard(metric.value, metric.metricName)}
+                      title={`Click to copy ${metric.value} ${metric.subtext}`}
+                    >
+                      <div className={styles.metricLabel}>{metric.label}</div>
+                      <div className={styles.metricValue}>{metric.value}</div>
+                      <div className={styles.metricSubtext}>{metric.subtext}</div>
+                      {copiedMetric === metric.metricName && (
+                        <div className={styles.copyIndicator}>
+                          <svg className={styles.copyIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>Copied!</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  
-                  <div className={styles.metricCard}>
-                    <div className={styles.metricLabel}>Total Tokens</div>
-                    <div className={styles.metricValue}>
-                      {result.tokenCount.toLocaleString()}
-                    </div>
-                  </div>
-                  
-                  <div className={styles.metricCard}>
-                    <div className={styles.metricLabel}>Sentences</div>
-                    <div className={styles.metricValue}>
-                      {result.sentenceCount.toLocaleString()}
-                    </div>
-                  </div>
-                  
-                  <div className={styles.metricCard}>
-                    <div className={styles.metricLabel}>Words/Sentence</div>
-                    <div className={styles.metricValue}>
-                      {result.averageWordsPerSentence}
-                    </div>
-                  </div>
-                  
-                  <div className={styles.metricCard}>
-                    <div className={styles.metricLabel}>Most Frequent Word</div>
-                    <div className={styles.metricValue}>
-                    &quot;{result.mostFrequentWord}&quot;
-                    </div>
-                    <div className={styles.metricSubtext}>
-                      appears {result.mostFrequentWordCount} times
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
