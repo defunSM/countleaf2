@@ -246,6 +246,23 @@ export default function Home() {
           <p className={styles.description}>Simple, fast, and reliable word counting tool for web content analysis</p>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className={styles.errorContainer}>
+            <div className={styles.errorCard}>
+              <div className={styles.errorContent}>
+                <svg className={styles.errorIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <h3 className={styles.errorTitle}>Error</h3>
+                  <p className={styles.errorMessage}>{error}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Card */}
         <div className={`${styles.mainCard} ${isVisible ? styles.visible : ''}`}>
           <form onSubmit={handleSubmit} className={styles.form}>
@@ -332,23 +349,6 @@ export default function Home() {
             </button>
           </form>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className={styles.errorContainer}>
-            <div className={styles.errorCard}>
-              <div className={styles.errorContent}>
-                <svg className={styles.errorIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <h3 className={styles.errorTitle}>Error</h3>
-                  <p className={styles.errorMessage}>{error}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Results */}
         {result && (
