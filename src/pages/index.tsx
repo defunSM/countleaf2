@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { countWordsFromUrl } from "@/lib/actions"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
@@ -11,6 +11,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [copiedMetric, setCopiedMetric] = useState<string | null>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
 
   // Convex mutations and queries
   const storeAnalysis = useMutation(api.analyses.storeAnalysis)
@@ -40,6 +41,14 @@ export default function Home() {
         readingTimeMinutes: Math.ceil(data.wordCount / 200),
         userAgent: navigator.userAgent,
       })
+      
+      // Smooth scroll to results after a short delay
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }, 100)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to process URL")
     } finally {
@@ -149,11 +158,13 @@ export default function Home() {
         )}
 
         {/* Hero Section */}
-        <div className={`${styles.hero} ${isVisible ? styles.visible : ''}`}>
-          <h1 className={styles.title}>CountLeaf</h1>
-          <p className={styles.subtitle}>Instantly count words from any webpage</p>
-          <p className={styles.description}>Simple, fast, and reliable word counting tool for web content analysis</p>
-        </div>
+        {!result && (
+          <div className={`${styles.hero} ${isVisible ? styles.visible : ''}`}>
+            <h1 className={styles.title}>CountLeaf</h1>
+            <p className={styles.subtitle}>Instantly count words from any webpage</p>
+            <p className={styles.description}>Simple, fast, and reliable word counting tool for web content analysis</p>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -219,7 +230,7 @@ export default function Home() {
 
         {/* Results */}
         {result && (
-          <div className={styles.resultsContainer}>
+          <div ref={resultsRef} className={styles.resultsContainer}>
             <div className={styles.resultsCard}>
               <div className={styles.resultsHeader}>
                 <h2 className={styles.resultsTitle}>Analysis Complete!</h2>
@@ -272,7 +283,8 @@ export default function Home() {
         )}
 
         {/* Features Section */}
-        <div className={`${styles.featuresSection} ${isVisible ? styles.visible : ''}`}>
+        {!result && (
+          <div className={`${styles.featuresSection} ${isVisible ? styles.visible : ''}`}>
           <h2 className={styles.featuresTitle}>Why Choose CountLeaf?</h2>
           <div className={styles.featuresGrid}>
             {[
@@ -300,6 +312,7 @@ export default function Home() {
             ))}
           </div>
         </div>
+        )}
       </div>
     </main>
   )
