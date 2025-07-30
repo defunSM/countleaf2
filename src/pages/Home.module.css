@@ -4,6 +4,8 @@
   background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #dcfce7 100%);
   position: relative;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 /* Background Elements */
@@ -66,12 +68,12 @@
   z-index: 10;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 4rem 1rem;
+  padding: 2rem 1rem;
 }
 
 @media (min-width: 768px) {
   .container {
-    padding: 6rem 2rem;
+    padding: 3rem 2rem;
   }
 }
 
@@ -363,6 +365,64 @@
   height: 24px;
 }
 
+/* CAPTCHA Styles */
+.captchaContainer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.captchaContainer .inputContainer {
+  flex: 1;
+}
+
+.refreshButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  border-color: #10b981;
+  transform: translateY(-1px);
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.refreshButton svg {
+  width: 20px;
+  height: 20px;
+  color: #6b7280;
+}
+
+.refreshButton:hover:not(:disabled) svg {
+  color: #10b981;
+}
+
+.captchaNote {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.captchaNote small {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
 /* Button */
 .button {
   width: 100%;
@@ -421,14 +481,14 @@
 /* Error Container */
 .errorContainer {
   max-width: 32rem;
-  margin: 2rem auto 0;
+  margin: 2rem auto 1.5rem;
 }
 
 .errorCard {
   background: #fef2f2;
   border-left: 4px solid #ef4444;
   padding: 1.5rem;
-  border-radius: 0 12px 12px 0;
+  border-radius: 12px 12px 12px 12px;
 }
 
 .errorContent {
@@ -882,6 +942,28 @@
   
   .copyIndicator {
     background: rgba(52, 211, 153, 0.95);
+  }
+  
+  .refreshButton {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    border-color: #6b7280;
+  }
+  
+  .refreshButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+    border-color: #10b981;
+  }
+  
+  .refreshButton svg {
+    color: #9ca3af;
+  }
+  
+  .refreshButton:hover:not(:disabled) svg {
+    color: #10b981;
+  }
+  
+  .captchaNote small {
+    color: #9ca3af;
   }
   
   .resultsActions {
