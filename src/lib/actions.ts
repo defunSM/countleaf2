@@ -10,12 +10,27 @@ export interface AnalysisResult {
   url: string
 }
 
-export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
+export async function countWordsFromUrl(url: string, captchaId?: string, captchaAnswer?: string): Promise<AnalysisResult> {
   try {
-    const response = await fetch(`/api/webcrawler?link=${encodeURIComponent(url)}`)
+    const requestBody: any = { link: url }
+    
+    // Only include CAPTCHA data if provided
+    if (captchaId && captchaAnswer !== undefined) {
+      requestBody.captchaId = captchaId
+      requestBody.captchaAnswer = captchaAnswer
+    }
+    
+    const response = await fetch('/api/webcrawler', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    })
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch webpage: ${response.statusText}`)
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to fetch webpage: ${response.statusText}`)
     }
     
     const html = await response.json()
