@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@next/font": "13.1.6",
     "@types/node": "18.13.0",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
@@ -18,10 +17,10 @@
     "clsx": "^2.1.1",
     "convex": "^1.25.4",
     "eslint": "8.33.0",
-    "eslint-config-next": "13.1.6",
+    "eslint-config-next": "^15.4.5",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.534.0",
-    "next": "13.1.6",
+    "next": "^15.4.5",
     "node-fetch": "^3.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

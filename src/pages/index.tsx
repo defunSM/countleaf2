@@ -240,7 +240,9 @@ export default function Home() {
               <div className={styles.resultsContent}>
                 <div className={styles.urlCard}>
                   <div className={styles.urlLabel}>Website URL</div>
-                  <div className={styles.urlValue}>{result.url}</div>
+                  <div className={styles.urlValue} title={result.url}>
+                    {result.url.length > 60 ? `${result.url.substring(0, 60)}...` : result.url}
+                  </div>
                 </div>
                 
                 <div className={styles.metricsGrid}>

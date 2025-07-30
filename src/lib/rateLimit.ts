@@ -14,9 +14,20 @@ class RateLimiter {
   }
 
   private getClientId(req: any): string {
+    // Prioritize direct connection IP over potentially spoofed headers
+    const directIp = req.connection?.remoteAddress || req.socket?.remoteAddress
+    
+    // Only trust X-Forwarded-For in specific environments (like behind a trusted proxy)
+    // For now, use direct IP to prevent spoofing
+    if (directIp) {
+      return directIp
+    }
+    
+    // Fallback to X-Forwarded-For only if no direct IP available
     const forwarded = req.headers['x-forwarded-for']
-    const ip = forwarded ? forwarded.split(',')[0] : req.connection.remoteAddress
-    return ip || 'unknown'
+    const forwardedIp = forwarded ? forwarded.split(',')[0].trim() : null
+    
+    return forwardedIp || 'unknown'
   }
 
   private cleanupExpiredEntries(): void {
