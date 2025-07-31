@@ -7,6 +7,7 @@ import {
   Filler,
   Tooltip,
   Legend,
+  ChartOptions,
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
 
@@ -85,7 +86,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
     ],
   };
 
-  const options = {
+  const options: ChartOptions<'radar'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -156,7 +157,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
         pointLabels: {
           font: {
             size: 12,
-            weight: '600' as const,
+            weight: 600,
           },
           color: 'var(--text)',
         },

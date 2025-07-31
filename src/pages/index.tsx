@@ -276,10 +276,10 @@ export default function Home() {
                     readingTimeMinutes={Math.ceil(result.wordCount / 200)}
                     analysisStats={analysisStats ? {
                       medianWords: analysisStats.medianWords ?? analysisStats.averageWords ?? 2500,
-                      medianCharacters: analysisStats.medianCharacters ?? analysisStats.averageCharacters ?? 12500,
+                      medianCharacters: (analysisStats.medianWords ?? analysisStats.averageWords ?? 2500) * 5,
                       medianSentences: analysisStats.medianSentences ?? analysisStats.averageSentences ?? 167,
-                      medianParagraphs: analysisStats.medianParagraphs ?? analysisStats.averageParagraphs ?? 25,
-                      medianReadingTime: analysisStats.medianReadingTime ?? analysisStats.averageReadingTime ?? 13,
+                      medianParagraphs: Math.ceil((analysisStats.medianWords ?? analysisStats.averageWords ?? 2500) / 100),
+                      medianReadingTime: analysisStats.medianReadingTime ?? 13,
                     } : undefined}
                   />
                 </div>
