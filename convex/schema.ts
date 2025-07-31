@@ -10,13 +10,12 @@ export default defineSchema({
     averageWordsPerSentence: v.optional(v.number()),
     mostFrequentWord: v.optional(v.string()),
     mostFrequentWordCount: v.optional(v.number()),
-    createdAt: v.number(),
-    userAgent: v.optional(v.string()),
-    ipAddress: v.optional(v.string()),
-    // Legacy fields for backward compatibility
     characterCount: v.optional(v.number()),
     paragraphCount: v.optional(v.number()),
     readingTimeMinutes: v.optional(v.number()),
+    createdAt: v.number(),
+    userAgent: v.optional(v.string()),
+    ipAddress: v.optional(v.string()),
   })
     .index("by_created_at", ["createdAt"])
     .index("by_url", ["url"]),

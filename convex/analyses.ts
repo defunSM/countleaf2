@@ -11,6 +11,9 @@ export const storeAnalysis = mutation({
     averageWordsPerSentence: v.optional(v.number()),
     mostFrequentWord: v.optional(v.string()),
     mostFrequentWordCount: v.optional(v.number()),
+    characterCount: v.optional(v.number()),
+    paragraphCount: v.optional(v.number()),
+    readingTimeMinutes: v.optional(v.number()),
     userAgent: v.optional(v.string()),
     ipAddress: v.optional(v.string()),
   },
@@ -59,6 +62,9 @@ export const updateAnalysis = mutation({
     averageWordsPerSentence: v.optional(v.number()),
     mostFrequentWord: v.optional(v.string()),
     mostFrequentWordCount: v.optional(v.number()),
+    characterCount: v.optional(v.number()),
+    paragraphCount: v.optional(v.number()),
+    readingTimeMinutes: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const { id, ...updateData } = args;
@@ -139,6 +145,7 @@ export const getAnalysisStats = query({
         totalSentences: 0,
         medianSentences: 0,
         medianAverageWordsPerSentence: 0,
+        medianReadingTime: 0,
         // Keep averages for backward compatibility
         averageWords: 0,
         averageTokens: 0,
@@ -156,6 +163,7 @@ export const getAnalysisStats = query({
     const tokenCounts = analyses.map(a => a.tokenCount ?? 0);
     const sentenceCounts = analyses.map(a => a.sentenceCount);
     const averageWordsPerSentence = analyses.map(a => a.averageWordsPerSentence ?? 0);
+    const readingTimes = analyses.map(a => a.readingTimeMinutes ?? 0);
 
     return {
       totalAnalyses: analyses.length,
@@ -166,6 +174,7 @@ export const getAnalysisStats = query({
       totalSentences,
       medianSentences: calculateMedian(sentenceCounts),
       medianAverageWordsPerSentence: calculateMedian(averageWordsPerSentence),
+      medianReadingTime: calculateMedian(readingTimes),
       // Keep averages for backward compatibility
       averageWords: Math.round(totalWords / analyses.length),
       averageTokens: Math.round(totalTokens / analyses.length),

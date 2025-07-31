@@ -9,6 +9,9 @@ export interface AnalysisResult {
   averageWordsPerSentence: number
   mostFrequentWord: string
   mostFrequentWordCount: number
+  characterCount: number
+  paragraphCount: number
+  readingTimeMinutes: number
   url: string
 }
 
@@ -31,6 +34,15 @@ async function analyzeHtmlContent(html: string, url: string): Promise<AnalysisRe
   
   // Count tokens (characters excluding spaces)
   const tokenCount = textContent.replace(/\s/g, '').length
+  
+  // Count total characters (including spaces)
+  const characterCount = textContent.length
+  
+  // Count paragraphs - split by double line breaks or paragraph tags
+  const paragraphs = $('p').length > 0 ? $('p').length : Math.max(1, textContent.split(/\n\s*\n/).filter(p => p.trim().length > 0).length)
+  
+  // Calculate reading time (average 200 words per minute)
+  const readingTimeMinutes = Math.max(1, Math.ceil(words.length / 200))
   
   // Count sentences - split by sentence-ending punctuation
   const sentences = textContent
@@ -66,6 +78,9 @@ async function analyzeHtmlContent(html: string, url: string): Promise<AnalysisRe
     averageWordsPerSentence,
     mostFrequentWord,
     mostFrequentWordCount,
+    characterCount,
+    paragraphCount: paragraphs,
+    readingTimeMinutes,
     url: url
   }
 }
@@ -90,6 +105,9 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
         averageWordsPerSentence: cachedAnalysis.averageWordsPerSentence ?? 0,
         mostFrequentWord: cachedAnalysis.mostFrequentWord ?? '',
         mostFrequentWordCount: cachedAnalysis.mostFrequentWordCount ?? 0,
+        characterCount: cachedAnalysis.characterCount ?? cachedAnalysis.wordCount * 5,
+        paragraphCount: cachedAnalysis.paragraphCount ?? Math.ceil(cachedAnalysis.wordCount / 100),
+        readingTimeMinutes: cachedAnalysis.readingTimeMinutes ?? Math.ceil(cachedAnalysis.wordCount / 200),
         url: cachedAnalysis.url
       }
     }
@@ -140,7 +158,10 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
         sentenceCount: analysisResult.sentenceCount,
         averageWordsPerSentence: analysisResult.averageWordsPerSentence,
         mostFrequentWord: analysisResult.mostFrequentWord,
-        mostFrequentWordCount: analysisResult.mostFrequentWordCount
+        mostFrequentWordCount: analysisResult.mostFrequentWordCount,
+        characterCount: analysisResult.characterCount,
+        paragraphCount: analysisResult.paragraphCount,
+        readingTimeMinutes: analysisResult.readingTimeMinutes
       })
     } else if (!cachedAnalysis) {
       // Store new analysis with user agent and IP information
@@ -152,6 +173,9 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
         averageWordsPerSentence: analysisResult.averageWordsPerSentence,
         mostFrequentWord: analysisResult.mostFrequentWord,
         mostFrequentWordCount: analysisResult.mostFrequentWordCount,
+        characterCount: analysisResult.characterCount,
+        paragraphCount: analysisResult.paragraphCount,
+        readingTimeMinutes: analysisResult.readingTimeMinutes,
         userAgent: finalUserAgent,
         ipAddress: serverIP
       })
