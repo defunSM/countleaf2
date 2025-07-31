@@ -147,12 +147,16 @@ export default function Home() {
                 <div className={styles.statLabel}>Total Words Analyzed</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{analysisStats.averageWords.toLocaleString()}</div>
-                <div className={styles.statLabel}>Average Words per Page</div>
+                <div className={styles.statValue}>
+                  {(analysisStats.medianWords ?? analysisStats.averageWords ?? 0).toLocaleString()}
+                </div>
+                <div className={styles.statLabel}>Median Words per Page</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statValue}>{analysisStats.averageReadingTime}</div>
-                <div className={styles.statLabel}>Avg. Reading Time (min)</div>
+                <div className={styles.statValue}>
+                  {analysisStats.medianReadingTime ?? analysisStats.averageReadingTime ?? 0}
+                </div>
+                <div className={styles.statLabel}>Median Reading Time (min)</div>
               </div>
             </div>
           </div>
@@ -251,13 +255,17 @@ export default function Home() {
                     <h3 className={styles.chartTitle}>Content Analysis Overview</h3>
                   </div>
                   <RadarChart 
-                    wordCount={result.wordCount} 
+                    wordCount={result.wordCount}
+                    characterCount={result.wordCount * 5}
+                    sentenceCount={Math.ceil(result.wordCount / 15)}
+                    paragraphCount={Math.ceil(result.wordCount / 100)}
+                    readingTimeMinutes={Math.ceil(result.wordCount / 200)}
                     analysisStats={analysisStats ? {
-                      averageWords: analysisStats.averageWords,
-                      averageCharacters: analysisStats.averageCharacters,
-                      averageSentences: analysisStats.averageSentences,
-                      averageParagraphs: analysisStats.averageParagraphs,
-                      averageReadingTime: analysisStats.averageReadingTime,
+                      medianWords: analysisStats.medianWords ?? analysisStats.averageWords ?? 2500,
+                      medianCharacters: analysisStats.medianCharacters ?? analysisStats.averageCharacters ?? 12500,
+                      medianSentences: analysisStats.medianSentences ?? analysisStats.averageSentences ?? 167,
+                      medianParagraphs: analysisStats.medianParagraphs ?? analysisStats.averageParagraphs ?? 25,
+                      medianReadingTime: analysisStats.medianReadingTime ?? analysisStats.averageReadingTime ?? 13,
                     } : undefined}
                   />
                 </div>

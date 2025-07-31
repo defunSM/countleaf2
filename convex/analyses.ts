@@ -62,6 +62,20 @@ export const getTotalAnalyses = query({
   },
 });
 
+// Helper function to calculate median
+const calculateMedian = (values: number[]): number => {
+  if (values.length === 0) return 0;
+  
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  
+  if (sorted.length % 2 === 0) {
+    return Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+  } else {
+    return sorted[mid];
+  }
+};
+
 // Get analysis statistics
 export const getAnalysisStats = query({
   handler: async (ctx) => {
@@ -71,14 +85,20 @@ export const getAnalysisStats = query({
       return {
         totalAnalyses: 0,
         totalWords: 0,
-        averageWords: 0,
+        medianWords: 0,
         totalCharacters: 0,
-        averageCharacters: 0,
+        medianCharacters: 0,
         totalSentences: 0,
-        averageSentences: 0,
+        medianSentences: 0,
         totalParagraphs: 0,
-        averageParagraphs: 0,
+        medianParagraphs: 0,
         totalReadingTime: 0,
+        medianReadingTime: 0,
+        // Keep averages for backward compatibility
+        averageWords: 0,
+        averageCharacters: 0,
+        averageSentences: 0,
+        averageParagraphs: 0,
         averageReadingTime: 0,
       };
     }
@@ -89,17 +109,30 @@ export const getAnalysisStats = query({
     const totalParagraphs = analyses.reduce((sum, analysis) => sum + analysis.paragraphCount, 0);
     const totalReadingTime = analyses.reduce((sum, analysis) => sum + analysis.readingTimeMinutes, 0);
 
+    // Extract arrays for median calculation
+    const wordCounts = analyses.map(a => a.wordCount);
+    const characterCounts = analyses.map(a => a.characterCount);
+    const sentenceCounts = analyses.map(a => a.sentenceCount);
+    const paragraphCounts = analyses.map(a => a.paragraphCount);
+    const readingTimes = analyses.map(a => a.readingTimeMinutes);
+
     return {
       totalAnalyses: analyses.length,
       totalWords,
-      averageWords: Math.round(totalWords / analyses.length),
+      medianWords: calculateMedian(wordCounts),
       totalCharacters,
-      averageCharacters: Math.round(totalCharacters / analyses.length),
+      medianCharacters: calculateMedian(characterCounts),
       totalSentences,
-      averageSentences: Math.round(totalSentences / analyses.length),
+      medianSentences: calculateMedian(sentenceCounts),
       totalParagraphs,
-      averageParagraphs: Math.round(totalParagraphs / analyses.length),
+      medianParagraphs: calculateMedian(paragraphCounts),
       totalReadingTime,
+      medianReadingTime: calculateMedian(readingTimes),
+      // Keep averages for backward compatibility
+      averageWords: Math.round(totalWords / analyses.length),
+      averageCharacters: Math.round(totalCharacters / analyses.length),
+      averageSentences: Math.round(totalSentences / analyses.length),
+      averageParagraphs: Math.round(totalParagraphs / analyses.length),
       averageReadingTime: Math.round(totalReadingTime / analyses.length),
     };
   },

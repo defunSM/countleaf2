@@ -20,38 +20,44 @@ ChartJS.register(
 );
 
 interface AnalysisStats {
-  averageWords: number;
-  averageCharacters: number;
-  averageSentences: number;
-  averageParagraphs: number;
-  averageReadingTime: number;
+  medianWords: number;
+  medianCharacters: number;
+  medianSentences: number;
+  medianParagraphs: number;
+  medianReadingTime: number;
 }
 
 interface RadarChartProps {
   wordCount: number;
+  characterCount: number;
+  sentenceCount: number;
+  paragraphCount: number;
+  readingTimeMinutes: number;
   analysisStats?: AnalysisStats;
 }
 
-export const RadarChart: React.FC<RadarChartProps> = ({ wordCount, analysisStats }) => {
-  const calculateNormalizedValue = (value: number, average: number) => {
-    if (average === 0) return 50; // Default to middle if no average available
-    // Normalize based on percentage above/below average (capped at 200% of average)
-    const percentage = (value / average) * 50; // 50 = 100% of average on our 0-100 scale
+export const RadarChart: React.FC<RadarChartProps> = ({ 
+  wordCount, 
+  characterCount, 
+  sentenceCount, 
+  paragraphCount, 
+  readingTimeMinutes, 
+  analysisStats 
+}) => {
+  const calculateNormalizedValue = (value: number, median: number) => {
+    if (median === 0) return 50; // Default to middle if no median available
+    // Normalize based on percentage above/below median (capped at 200% of median)
+    const percentage = (value / median) * 50; // 50 = 100% of median on our 0-100 scale
     return Math.min(percentage, 100);
   };
 
-  const characters = wordCount * 5;
-  const sentences = Math.ceil(wordCount / 15);
-  const paragraphs = Math.ceil(wordCount / 100);
-  const readingTime = Math.ceil(wordCount / 200);
-
-  // Use fallback averages if analysisStats is not available
+  // Use fallback medians if analysisStats is not available
   const fallbackStats = {
-    averageWords: 2500,
-    averageCharacters: 12500,
-    averageSentences: 167,
-    averageParagraphs: 25,
-    averageReadingTime: 13
+    medianWords: 2500,
+    medianCharacters: 12500,
+    medianSentences: 167,
+    medianParagraphs: 25,
+    medianReadingTime: 13
   };
 
   const stats = analysisStats || fallbackStats;
@@ -62,11 +68,11 @@ export const RadarChart: React.FC<RadarChartProps> = ({ wordCount, analysisStats
       {
         label: 'Content Metrics',
         data: [
-          calculateNormalizedValue(wordCount, stats.averageWords),
-          calculateNormalizedValue(characters, stats.averageCharacters),
-          calculateNormalizedValue(sentences, stats.averageSentences),
-          calculateNormalizedValue(paragraphs, stats.averageParagraphs),
-          calculateNormalizedValue(readingTime, stats.averageReadingTime),
+          calculateNormalizedValue(wordCount, stats.medianWords),
+          calculateNormalizedValue(characterCount, stats.medianCharacters),
+          calculateNormalizedValue(sentenceCount, stats.medianSentences),
+          calculateNormalizedValue(paragraphCount, stats.medianParagraphs),
+          calculateNormalizedValue(readingTimeMinutes, stats.medianReadingTime),
         ],
         backgroundColor: 'rgba(0, 191, 174, 0.2)',
         borderColor: 'rgba(0, 191, 174, 1)',
@@ -91,44 +97,44 @@ export const RadarChart: React.FC<RadarChartProps> = ({ wordCount, analysisStats
           label: function(context: any) {
             const label = context.label;
             let actualValue: number;
-            let averageValue: number;
+            let medianValue: number;
             let unit: string;
             
             switch(label) {
               case 'Words':
                 actualValue = wordCount;
-                averageValue = stats.averageWords;
+                medianValue = stats.medianWords;
                 unit = '';
                 break;
               case 'Characters':
-                actualValue = characters;
-                averageValue = stats.averageCharacters;
+                actualValue = characterCount;
+                medianValue = stats.medianCharacters;
                 unit = '';
                 break;
               case 'Sentences':
-                actualValue = sentences;
-                averageValue = stats.averageSentences;
+                actualValue = sentenceCount;
+                medianValue = stats.medianSentences;
                 unit = '';
                 break;
               case 'Paragraphs':
-                actualValue = paragraphs;
-                averageValue = stats.averageParagraphs;
+                actualValue = paragraphCount;
+                medianValue = stats.medianParagraphs;
                 unit = '';
                 break;
               case 'Reading Time':
-                actualValue = readingTime;
-                averageValue = stats.averageReadingTime;
+                actualValue = readingTimeMinutes;
+                medianValue = stats.medianReadingTime;
                 unit = ' minutes';
                 break;
               default:
                 return `${label}: ${context.parsed.r}%`;
             }
             
-            const percentage = averageValue > 0 ? Math.round((actualValue / averageValue) * 100) : 100;
+            const percentage = medianValue > 0 ? Math.round((actualValue / medianValue) * 100) : 100;
             return [
               `${label}: ${actualValue.toLocaleString()}${unit}`,
-              `Average: ${averageValue.toLocaleString()}${unit}`,
-              `${percentage}% of average`
+              `Median: ${medianValue.toLocaleString()}${unit}`,
+              `${percentage}% of median`
             ];
           }
         }
