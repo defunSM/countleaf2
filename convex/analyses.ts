@@ -6,10 +6,11 @@ export const storeAnalysis = mutation({
   args: {
     url: v.string(),
     wordCount: v.number(),
-    characterCount: v.number(),
+    tokenCount: v.optional(v.number()),
     sentenceCount: v.number(),
-    paragraphCount: v.number(),
-    readingTimeMinutes: v.number(),
+    averageWordsPerSentence: v.optional(v.number()),
+    mostFrequentWord: v.optional(v.string()),
+    mostFrequentWordCount: v.optional(v.number()),
     userAgent: v.optional(v.string()),
     ipAddress: v.optional(v.string()),
   },
@@ -19,6 +20,53 @@ export const storeAnalysis = mutation({
       createdAt: Date.now(),
     });
     return analysisId;
+  },
+});
+
+// Get analysis by URL (for caching)
+export const getAnalysisByUrl = query({
+  args: {
+    url: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const analysis = await ctx.db
+      .query("analyses")
+      .withIndex("by_url", (q) => q.eq("url", args.url))
+      .order("desc")
+      .first();
+    
+    // Return with defaults for missing fields
+    if (analysis) {
+      return {
+        ...analysis,
+        tokenCount: analysis.tokenCount ?? 0,
+        averageWordsPerSentence: analysis.averageWordsPerSentence ?? 0,
+        mostFrequentWord: analysis.mostFrequentWord ?? '',
+        mostFrequentWordCount: analysis.mostFrequentWordCount ?? 0,
+      };
+    }
+    return analysis;
+  },
+});
+
+// Update existing analysis
+export const updateAnalysis = mutation({
+  args: {
+    id: v.id("analyses"),
+    wordCount: v.number(),
+    tokenCount: v.optional(v.number()),
+    sentenceCount: v.number(),
+    averageWordsPerSentence: v.optional(v.number()),
+    mostFrequentWord: v.optional(v.string()),
+    mostFrequentWordCount: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updateData } = args;
+    await ctx.db.patch(id, {
+      ...updateData,
+      createdAt: Date.now(),
+    });
+    return id;
   },
 });
 
@@ -86,54 +134,43 @@ export const getAnalysisStats = query({
         totalAnalyses: 0,
         totalWords: 0,
         medianWords: 0,
-        totalCharacters: 0,
-        medianCharacters: 0,
+        totalTokens: 0,
+        medianTokens: 0,
         totalSentences: 0,
         medianSentences: 0,
-        totalParagraphs: 0,
-        medianParagraphs: 0,
-        totalReadingTime: 0,
-        medianReadingTime: 0,
+        medianAverageWordsPerSentence: 0,
         // Keep averages for backward compatibility
         averageWords: 0,
-        averageCharacters: 0,
+        averageTokens: 0,
         averageSentences: 0,
-        averageParagraphs: 0,
-        averageReadingTime: 0,
+        averageAverageWordsPerSentence: 0,
       };
     }
 
     const totalWords = analyses.reduce((sum, analysis) => sum + analysis.wordCount, 0);
-    const totalCharacters = analyses.reduce((sum, analysis) => sum + analysis.characterCount, 0);
+    const totalTokens = analyses.reduce((sum, analysis) => sum + analysis.tokenCount, 0);
     const totalSentences = analyses.reduce((sum, analysis) => sum + analysis.sentenceCount, 0);
-    const totalParagraphs = analyses.reduce((sum, analysis) => sum + analysis.paragraphCount, 0);
-    const totalReadingTime = analyses.reduce((sum, analysis) => sum + analysis.readingTimeMinutes, 0);
 
     // Extract arrays for median calculation
     const wordCounts = analyses.map(a => a.wordCount);
-    const characterCounts = analyses.map(a => a.characterCount);
+    const tokenCounts = analyses.map(a => a.tokenCount);
     const sentenceCounts = analyses.map(a => a.sentenceCount);
-    const paragraphCounts = analyses.map(a => a.paragraphCount);
-    const readingTimes = analyses.map(a => a.readingTimeMinutes);
+    const averageWordsPerSentence = analyses.map(a => a.averageWordsPerSentence);
 
     return {
       totalAnalyses: analyses.length,
       totalWords,
       medianWords: calculateMedian(wordCounts),
-      totalCharacters,
-      medianCharacters: calculateMedian(characterCounts),
+      totalTokens,
+      medianTokens: calculateMedian(tokenCounts),
       totalSentences,
       medianSentences: calculateMedian(sentenceCounts),
-      totalParagraphs,
-      medianParagraphs: calculateMedian(paragraphCounts),
-      totalReadingTime,
-      medianReadingTime: calculateMedian(readingTimes),
+      medianAverageWordsPerSentence: calculateMedian(averageWordsPerSentence),
       // Keep averages for backward compatibility
       averageWords: Math.round(totalWords / analyses.length),
-      averageCharacters: Math.round(totalCharacters / analyses.length),
+      averageTokens: Math.round(totalTokens / analyses.length),
       averageSentences: Math.round(totalSentences / analyses.length),
-      averageParagraphs: Math.round(totalParagraphs / analyses.length),
-      averageReadingTime: Math.round(totalReadingTime / analyses.length),
+      averageAverageWordsPerSentence: Math.round(averageWordsPerSentence.reduce((sum, val) => sum + val, 0) / analyses.length * 100) / 100,
     };
   },
 }); 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
-import { countWordsFromUrl } from "@/lib/actions"
-import { useMutation, useQuery } from "convex/react"
+import { countWordsFromUrl, AnalysisResult } from "@/lib/actions"
+import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 import { RadarChart } from "@/components/RadarChart"
 import styles from "./Home.module.css"
@@ -8,14 +8,13 @@ import styles from "./Home.module.css"
 export default function Home() {
   const [url, setUrl] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<{ wordCount: number; url: string } | null>(null)
+  const [result, setResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [copiedMetric, setCopiedMetric] = useState<string | null>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
 
-  // Convex mutations and queries
-  const storeAnalysis = useMutation(api.analyses.storeAnalysis)
+  // Convex queries
   const totalAnalyses = useQuery(api.analyses.getTotalAnalyses)
   const analysisStats = useQuery(api.analyses.getAnalysisStats)
 
@@ -32,16 +31,7 @@ export default function Home() {
       const data = await countWordsFromUrl(url)
       setResult(data)
       
-      // Store analysis data in Convex
-      await storeAnalysis({
-        url: data.url,
-        wordCount: data.wordCount,
-        characterCount: data.wordCount * 5, // Rough estimate
-        sentenceCount: Math.ceil(data.wordCount / 15), // Rough estimate
-        paragraphCount: Math.ceil(data.wordCount / 100), // Rough estimate
-        readingTimeMinutes: Math.ceil(data.wordCount / 200),
-        userAgent: navigator.userAgent,
-      })
+      // Analysis is now stored automatically in countWordsFromUrl
       
       // Smooth scroll to results after a short delay
       setTimeout(() => {
@@ -91,10 +81,22 @@ export default function Home() {
         metricName: "characters"
       },
       {
+        label: "Tokens",
+        value: result.tokenCount.toLocaleString(),
+        subtext: "characters (no spaces)",
+        metricName: "tokens"
+      },
+      {
         label: "Sentences",
-        value: Math.ceil(result.wordCount / 15).toLocaleString(), // Rough estimate
-        subtext: "sentences",
+        value: result.sentenceCount.toLocaleString(),
+        subtext: "actual sentences",
         metricName: "sentences"
+      },
+      {
+        label: "Est. Sentences",
+        value: Math.ceil(result.wordCount / 15).toLocaleString(), // Rough estimate
+        subtext: "estimated sentences",
+        metricName: "estimatedSentences"
       },
       {
         label: "Paragraphs",
@@ -103,10 +105,22 @@ export default function Home() {
         metricName: "paragraphs"
       },
       {
+        label: "Avg Words/Sentence",
+        value: result.averageWordsPerSentence.toString(),
+        subtext: "words per sentence",
+        metricName: "avgWordsPerSentence"
+      },
+      {
         label: "Reading Time",
         value: Math.ceil(result.wordCount / 200).toString(),
         subtext: "minutes",
         metricName: "readingTime"
+      },
+      {
+        label: "Most Frequent Word",
+        value: `"${result.mostFrequentWord}" (${result.mostFrequentWordCount})`,
+        subtext: "most common word",
+        metricName: "mostFrequentWord"
       }
     ]
   }
