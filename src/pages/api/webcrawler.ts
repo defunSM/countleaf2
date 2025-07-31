@@ -116,8 +116,26 @@ export default async function handler(
       })
     }
     
+    // Capture client information for analytics (privacy-conscious)
+    const clientIP = req.headers['x-forwarded-for'] || 
+                     req.headers['x-real-ip'] || 
+                     req.connection?.remoteAddress || 
+                     req.socket?.remoteAddress || 
+                     'unknown'
+    
+    const userAgent = req.headers['user-agent'] || 'unknown'
+    
     const html = await getHTML(link)
-    res.status(200).json(html)
+    
+    // Return HTML along with client metadata
+    res.status(200).json({
+      html,
+      metadata: {
+        userAgent,
+        clientIP: Array.isArray(clientIP) ? clientIP[0] : clientIP,
+        timestamp: Date.now()
+      }
+    })
   } catch (error) {
     // Log error internally but don't expose details to prevent information leakage
     console.error('Webcrawler error:', error)

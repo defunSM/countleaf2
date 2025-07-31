@@ -72,6 +72,9 @@ async function analyzeHtmlContent(html: string, url: string): Promise<AnalysisRe
 
 export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
   try {
+    // Capture user agent and IP information
+    const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : 'Server-side request'
+    
     // Check if we have a cached analysis
     const cachedAnalysis = await convex.query(api.analyses.getAnalysisByUrl, { url })
     
@@ -102,8 +105,30 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
       throw new Error(`Failed to fetch webpage: ${response.statusText}`)
     }
     
-    const html = await response.json()
+    const responseData = await response.json()
+    
+    // Handle both old and new response formats for backward compatibility
+    let html: string
+    let serverUserAgent: string | undefined
+    let serverIP: string | undefined
+    
+    if (typeof responseData === 'string') {
+      // Old format - just HTML string
+      html = responseData
+    } else if (responseData.html) {
+      // New format - object with html and metadata
+      html = responseData.html
+      serverUserAgent = responseData.metadata?.userAgent
+      serverIP = responseData.metadata?.clientIP
+    } else {
+      // Fallback - treat as HTML string
+      html = responseData
+    }
+    
     const analysisResult = await analyzeHtmlContent(html, url)
+    
+    // Use server-provided user agent if available, otherwise use client-side
+    const finalUserAgent = serverUserAgent || userAgent
     
     // Store or update the analysis in the database
     if (cachedAnalysis && isExpired) {
@@ -118,7 +143,7 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
         mostFrequentWordCount: analysisResult.mostFrequentWordCount
       })
     } else if (!cachedAnalysis) {
-      // Store new analysis
+      // Store new analysis with user agent and IP information
       await convex.mutation(api.analyses.storeAnalysis, {
         url: analysisResult.url,
         wordCount: analysisResult.wordCount,
@@ -126,7 +151,9 @@ export async function countWordsFromUrl(url: string): Promise<AnalysisResult> {
         sentenceCount: analysisResult.sentenceCount,
         averageWordsPerSentence: analysisResult.averageWordsPerSentence,
         mostFrequentWord: analysisResult.mostFrequentWord,
-        mostFrequentWordCount: analysisResult.mostFrequentWordCount
+        mostFrequentWordCount: analysisResult.mostFrequentWordCount,
+        userAgent: finalUserAgent,
+        ipAddress: serverIP
       })
     }
     

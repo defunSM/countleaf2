@@ -148,14 +148,14 @@ export const getAnalysisStats = query({
     }
 
     const totalWords = analyses.reduce((sum, analysis) => sum + analysis.wordCount, 0);
-    const totalTokens = analyses.reduce((sum, analysis) => sum + analysis.tokenCount, 0);
+    const totalTokens = analyses.reduce((sum, analysis) => sum + (analysis.tokenCount ?? 0), 0);
     const totalSentences = analyses.reduce((sum, analysis) => sum + analysis.sentenceCount, 0);
 
     // Extract arrays for median calculation
     const wordCounts = analyses.map(a => a.wordCount);
-    const tokenCounts = analyses.map(a => a.tokenCount);
+    const tokenCounts = analyses.map(a => a.tokenCount ?? 0);
     const sentenceCounts = analyses.map(a => a.sentenceCount);
-    const averageWordsPerSentence = analyses.map(a => a.averageWordsPerSentence);
+    const averageWordsPerSentence = analyses.map(a => a.averageWordsPerSentence ?? 0);
 
     return {
       totalAnalyses: analyses.length,
@@ -170,7 +170,7 @@ export const getAnalysisStats = query({
       averageWords: Math.round(totalWords / analyses.length),
       averageTokens: Math.round(totalTokens / analyses.length),
       averageSentences: Math.round(totalSentences / analyses.length),
-      averageAverageWordsPerSentence: Math.round(averageWordsPerSentence.reduce((sum, val) => sum + val, 0) / analyses.length * 100) / 100,
+      averageAverageWordsPerSentence: Math.round(averageWordsPerSentence.reduce((sum, val) => sum + (val ?? 0), 0) / analyses.length * 100) / 100,
     };
   },
 }); 
