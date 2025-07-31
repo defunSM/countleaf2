@@ -168,7 +168,7 @@ export default function Home() {
               </div>
               <div className={styles.statCard}>
                 <div className={styles.statValue}>
-                  {analysisStats.medianReadingTime ?? analysisStats.averageReadingTime ?? 0}
+                  {analysisStats.medianReadingTime ?? 0}
                 </div>
                 <div className={styles.statLabel}>Median Reading Time (min)</div>
               </div>
